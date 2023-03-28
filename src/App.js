@@ -6,9 +6,30 @@ function App() {
   const [incols, setIncols] = useState(0)
   const [rows, setRows] = useState(Array(0).fill(null));
   const [columns, setColumns] = useState(Array(0).fill(null));
+  const [activeCell, setActiveCell] = useState({ row: 0, col: 0 });
+
   function generateBox() {
     setRows(Array(inrows).fill(null));
     setColumns(Array(incols).fill(null));
+  }
+
+  function handleKeyDown(e) {
+    switch (e.key) {
+      case 'ArrowUp':
+        setActiveCell({ row: Math.max(0, activeCell.row - 1), col: activeCell.col });
+        break;
+      case 'ArrowDown':
+        setActiveCell({ row: Math.min(inrows - 1, activeCell.row + 1), col: activeCell.col });
+        break;
+      case 'ArrowLeft':
+        setActiveCell({ row: activeCell.row, col: Math.max(0, activeCell.col - 1) });
+        break;
+      case 'ArrowRight':
+        setActiveCell({ row: activeCell.row, col: Math.min(incols - 1, activeCell.col + 1) });
+        break;
+      default:
+        break;
+    }
   }
 
   return (
@@ -19,11 +40,13 @@ function App() {
         <button onClick={generateBox}>Go</button> 
 
             <div className="box-container">
-              <table>
+              <table onKeyDown={handleKeyDown} tabIndex={0}>
                 {
                   rows.map((e,i) => {
                     return <tr>
-                      {columns.map((eve,idx) => {return <td></td>})}
+                      {columns.map((eve,idx) => {
+                        const isActive = activeCell.row === i && activeCell.col === idx;
+                        return <td className={isActive ? 'active' : ''}></td>})}
                     </tr>
                   })
                 }
